@@ -1,6 +1,6 @@
 # ♔ Chess Engine - Multi-Paradigm Project
 
-A fully functional chess game demonstrating the integration of three programming paradigms: **Logic Programming (Prolog)**, **Functional Programming (Scheme)**, and **Object-Oriented Programming (C++)**.
+A fully functional chess game demonstrating the integration of three programming paradigms: **Logic Programming with Prolog**, **Functional Programming with Scheme**, and **Object-Oriented Programming C++**.
 
 ## 📋 Project Overview
 
