@@ -4,8 +4,8 @@
 #include <cctype>
 #include <algorithm>
 
-Game::Game(const std::string& prologPath) 
-    : prolog(prologPath), currentPlayer(Color::WHITE), gameOver(false) 
+Game::Game(const std::string& prologPath, const std::string& schemePath) 
+    : prolog(prologPath), scheme(schemePath), currentPlayer(Color::WHITE), gameOver(false) 
     {
     board.setupInitialPosition();
 }
@@ -125,13 +125,55 @@ Move Game::getHumanMove()
     }
 }
 
-// Get AI move (placeholder - returns random legal move or invalid move)
-Move Game::getAIMove() 
+// Converts a Move into a coordinate string like "e2e4"
+static std::string moveToString(const Move& move)
+{
+    char fromFile = 'a' + move.fromCol;
+    char fromRank = '1' + move.fromRow;
+    char toFile   = 'a' + move.toCol;
+    char toRank   = '1' + move.toRow;
+
+    std::string s;
+    s += fromFile;
+    s += fromRank;
+    s += toFile;
+    s += toRank;
+    return s;
+}
+
+// Lets the AI pick a move using Prolog for legality and Scheme for decision-making
+Move Game::getAIMove()
 {
     std::cout << "\nAI is thinking...\n";
-    // TODO: Call Scheme AI here
-    // For now, just return an invalid move
-    return Move(-1, -1, -1, -1);
+
+    // Ask Prolog for all legal moves in the current position
+    std::vector<Move> legalMoves = prolog.getAllLegalMoves(board, currentPlayer);
+
+    // If there are no legal moves, return an invalid move as a signal
+    if (legalMoves.empty())
+    {
+        return Move(-1, -1, -1, -1);
+    }
+
+    // Convert legal moves into strings for the Scheme AI
+    std::vector<std::string> moveStrings;
+    moveStrings.reserve(legalMoves.size());
+    for (const auto& m : legalMoves)
+        moveStrings.push_back(moveToString(m));
+
+    // Prepare color and board strings to pass into Scheme
+    std::string colorStr = Board::colorToString(currentPlayer);
+    std::string boardStr = board.toSchemeString();
+
+    // Ask Scheme to choose one move from the list of legal moves
+    std::string chosen = scheme.chooseMove(colorStr, boardStr, moveStrings);
+
+    // If Scheme fails to return a move, signal failure with an invalid move
+    if (chosen.empty())
+        return Move(-1, -1, -1, -1);
+
+    // Convert the chosen move string back into a Move object
+    return parseMove(chosen);
 }
 
 // Attempt to make a move
@@ -189,7 +231,18 @@ void Game::play()
         board.display();
         displayStatus();
         
-        Move move = getHumanMove();
+        Move move(-1, -1, -1, -1);
+
+        if (currentPlayer == Color::WHITE)
+        {
+            // Human plays White
+            move = getHumanMove();
+        }
+        else
+        {
+            // AI plays Black
+            move = getAIMove();
+        }
         
         if (gameOver) break;
         
