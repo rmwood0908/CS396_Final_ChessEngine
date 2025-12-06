@@ -12,6 +12,8 @@ private:
     
     // Helper: Execute a Prolog query and get result
     std::string executePrologQuery(const std::string& query) const;
+
+    std::string executePrologRaw(const std::string& goal) const;
     
 public:
     PrologInterface(const std::string& prologFilePath);
