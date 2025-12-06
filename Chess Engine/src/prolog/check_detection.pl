@@ -33,10 +33,9 @@ legal_move(Board, Color, FromRow, FromCol, ToRow, ToCol) :-
     execute_move(Board, FromRow, FromCol, ToRow, ToCol, NewBoard),
     \+ in_check(NewBoard, Color).
 
-% Get all legal moves (FIXED VERSION)
+% Get all legal moves
 all_legal_moves(Board, Color, Moves) :-
-    findall
-    (
+    findall(
         move(FromRow, FromCol, ToRow, ToCol),
         (
             member(piece(_, Color, FromRow, FromCol), Board),
@@ -51,6 +50,13 @@ all_legal_moves(Board, Color, Moves) :-
 % CHECKMATE & STALEMATE
 % ======================
 
+% Check if color has any legal move
+has_legal_move(Board, Color) :-
+    member(piece(_, Color, FromRow, FromCol), Board),
+    between(1, 8, ToRow),
+    between(1, 8, ToCol),
+    legal_move(Board, Color, FromRow, FromCol, ToRow, ToCol), !.
+
 % Checkmate: in check and no legal moves
 is_checkmate(Board, Color) :-
     in_check(Board, Color),
@@ -61,16 +67,8 @@ is_stalemate(Board, Color) :-
     \+ in_check(Board, Color),
     \+ has_legal_move(Board, Color).
 
-% Check if color has any legal move (FIXED VERSION)
-has_legal_move(Board, Color) :-
-    member(piece(_, Color, FromRow, FromCol), Board),
-    between(1, 8, ToRow),
-    between(1, 8, ToCol),
-    legal_move(Board, Color, FromRow, FromCol, ToRow, ToCol), !.
-
 % Game is over if checkmate or stalemate
 game_over(Board, Color, Result) :-
     ( is_checkmate(Board, Color) -> Result = checkmate
     ; is_stalemate(Board, Color) -> Result = stalemate
-    ; fail
     ).
