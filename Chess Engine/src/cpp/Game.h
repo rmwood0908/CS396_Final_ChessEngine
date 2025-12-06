@@ -3,6 +3,7 @@
 
 #include "Board.h"
 #include "PrologInterface.h"
+#include "SchemeInterface.h"
 #include <string>
 
 class Game 
@@ -10,6 +11,7 @@ class Game
 private:
     Board board;
     PrologInterface prolog;
+    SchemeInterface scheme;
     Color currentPlayer;
     bool gameOver;
     
@@ -22,7 +24,7 @@ private:
     void displayStatus() const;
     
 public:
-    Game(const std::string& prologPath);
+    Game(const std::string& prologPath, const std::string& schemePath);
     
     // Main game loop
     void play();
@@ -30,7 +32,7 @@ public:
     // Get move from human player
     Move getHumanMove();
     
-    // Get move from AI (placeholder for now)
+    // Get move from AI
     Move getAIMove();
     
     // Process a move
