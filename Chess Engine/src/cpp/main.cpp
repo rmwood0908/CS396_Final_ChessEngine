@@ -5,7 +5,7 @@ int main()
 {
     try 
     {
-        Game game("../prolog");
+        Game game("../prolog", "../scheme");
         game.play();
     }
     catch (const std::exception& e) 
